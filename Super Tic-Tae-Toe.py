@@ -67,3 +67,81 @@ class TicTacToeGame:
 
     # setup turn 1 for O
     self.player = 1
+
+    # available size for players
+    self.deck = {
+      1 : [3, 3, 2],
+      2 : [3, 3, 2]
+    }
+
+    # draw deck
+    self.draw_deck()
+
+    # setup game array
+    self.board = np.zeros( (BOARD_ROWS, BOARD_COLS, 2) )
+
+    # setup game over state
+    self.game_over = False
+
+    # selecting size
+    self.selecting_size = 0
+
+    # show starting text
+    print("Starting game")
+
+  # draw frame for tic tac toe
+  def draw_frame(self):
+    # horizontal line
+    pygame.draw.line( self.screen, LINE_COLOR, (0, SQUARE_SIZE), (WIDTH, SQUARE_SIZE), LINE_WIDTH )
+    pygame.draw.line( self.screen, LINE_COLOR, (0, 2 * SQUARE_SIZE), (WIDTH, 2 * SQUARE_SIZE), LINE_WIDTH )
+    pygame.draw.line( self.screen, LINE_COLOR, (0, 3 * SQUARE_SIZE), (WIDTH, 3 * SQUARE_SIZE), LINE_WIDTH )
+    pygame.draw.line( self.screen, LINE_COLOR, (0, 4 * SQUARE_SIZE), (WIDTH, 4 * SQUARE_SIZE), LINE_WIDTH )
+
+    # vertical line
+    pygame.draw.line( self.screen, LINE_COLOR, (SQUARE_SIZE, SQUARE_SIZE), (SQUARE_SIZE, HEIGHT - SQUARE_SIZE), LINE_WIDTH )
+    pygame.draw.line( self.screen, LINE_COLOR, (2 * SQUARE_SIZE, SQUARE_SIZE), (2 * SQUARE_SIZE, HEIGHT - SQUARE_SIZE), LINE_WIDTH )
+
+  def draw_deck(self):
+    if self.player == 1:
+      x_row = 0
+      o_row = 4
+    elif self.player == 2:
+      x_row = 4
+      o_row = 0
+
+    for i in range(1,4):
+      start_position_x = 0
+      for j in range(1, i):
+        # blank for other mark
+        start_position_x += CIRCLE_RADIUS[j] * 3
+
+      # add offset
+      start_position_x += CIRCLE_RADIUS[i] * 1.5
+
+      self.center_x_list.append(start_position_x)
+
+      # draw O
+      if self.deck[1][i - 1] != 0:
+        pygame.draw.circle( self.screen, CIRCLE_COLOR, (int( start_position_x ), int( o_row * SQUARE_SIZE + SQUARE_SIZE//2 )), CIRCLE_RADIUS[i], CIRCLE_WIDTH[i] )
+
+      # draw X
+      if self.deck[2][i - 1] != 0:
+        pygame.draw.line( self.screen, CROSS_COLOR, (start_position_x - CROSS_SIZE[i] // 2, x_row * SQUARE_SIZE + SQUARE_SIZE // 2 - CROSS_SIZE[i] // 2), (start_position_x + CROSS_SIZE[i] // 2, x_row * SQUARE_SIZE + SQUARE_SIZE // 2 + CROSS_SIZE[i] // 2 ), CROSS_WIDTH[i] )
+        pygame.draw.line( self.screen, CROSS_COLOR, (start_position_x - CROSS_SIZE[i] // 2, x_row * SQUARE_SIZE + SQUARE_SIZE // 2 + CROSS_SIZE[i] // 2), (start_position_x + CROSS_SIZE[i] // 2, x_row * SQUARE_SIZE + SQUARE_SIZE // 2 - CROSS_SIZE[i] // 2 ), CROSS_WIDTH[i] )
+  
+  # draw selecting symbol on selecting size
+  def draw_selecting_size(self, size):
+    pygame.draw.circle( self.screen, SELECTING_COLOR, (int( self.center_x_list[size] ), int( 5 * SQUARE_SIZE - 15 )), 10 )
+
+  # draw X or O in table
+  def draw_mark(self):
+    for row in range(BOARD_ROWS):
+      for col in range(BOARD_COLS):
+        # drawing O
+        if self.board[row][col][0] == 1:
+          pygame.draw.circle( self.screen, CIRCLE_COLOR, (int( col * SQUARE_SIZE + SQUARE_SIZE//2 ), int( (row + 1) * SQUARE_SIZE + SQUARE_SIZE//2 )), CIRCLE_RADIUS[self.board[row][col][1]], CIRCLE_WIDTH[self.board[row][col][1]] )
+        # drawing X
+        elif self.board[row][col][0] == 2:
+          pygame.draw.line( self.screen, CROSS_COLOR, ((col + 0.5) * SQUARE_SIZE - CROSS_SIZE[self.board[row][col][1]] // 2, (row + 1) * SQUARE_SIZE + SQUARE_SIZE // 2 - CROSS_SIZE[self.board[row][col][1]] // 2), ((col + 0.5) * SQUARE_SIZE + CROSS_SIZE[self.board[row][col][1]] // 2, (row + 1) * SQUARE_SIZE + SQUARE_SIZE // 2 + CROSS_SIZE[self.board[row][col][1]] // 2 ), CROSS_WIDTH[self.board[row][col][1]] )
+          pygame.draw.line( self.screen, CROSS_COLOR, ((col + 0.5) * SQUARE_SIZE - CROSS_SIZE[self.board[row][col][1]] // 2, (row + 1) * SQUARE_SIZE + SQUARE_SIZE // 2 + CROSS_SIZE[self.board[row][col][1]] // 2), ((col + 0.5) * SQUARE_SIZE + CROSS_SIZE[self.board[row][col][1]] // 2, (row + 1) * SQUARE_SIZE + SQUARE_SIZE // 2 - CROSS_SIZE[self.board[row][col][1]] // 2 ), CROSS_WIDTH[self.board[row][col][1]] )
+        # blank
